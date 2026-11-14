@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://b88snivw0c06i"]
+
+[ext_resource type="Texture2D" uid="uid://oex06dvlwfen" path="res://icon.svg" id="1_3vyb7"]
+[ext_resource type="Script" uid="uid://dw7bxkfre5sxs" path="res://scenes/player.gd" id="1_g2els"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_neqau"]
+radius = 20.0
+
+[sub_resource type="Gradient" id="Gradient_g2els"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ko505"]
+gradient = SubResource("Gradient_g2els")
+width = 512
+height = 512
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="Player" type="CharacterBody2D" unique_id=629741390]
+motion_mode = 1
+script = ExtResource("1_g2els")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1912912030]
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("1_3vyb7")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1404218332]
+shape = SubResource("CircleShape2D_neqau")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=531956043]
+position_smoothing_enabled = true
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=682427259]
+energy = 1.4
+texture = SubResource("GradientTexture2D_ko505")
+
+[node name="DashTimer" type="Timer" parent="." unique_id=47086773]
+wait_time = 0.15
+one_shot = true
+
+[node name="CooldownTimer" type="Timer" parent="." unique_id=2043183282]
+wait_time = 0.8
+one_shot = true
+
+[connection signal="timeout" from="DashTimer" to="." method="_on_dash_timer_timeout"]
+[connection signal="timeout" from="CooldownTimer" to="." method="_on_cooldown_timer_timeout"]

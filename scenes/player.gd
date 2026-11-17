@@ -30,17 +30,17 @@ func _physics_process(delta):
 	update_animation(direction)
 	
 func update_animation(direction):
-	 if direction.x <0:
-		 $AnimatedSprite2D.flip_h = true
-	 elif direction.x > 0:
-		 $AnimatedSprite2D.flip_h = false
-	 if is_dashing:
-		 $AnimatedSprite2D.play("dash")
-	 elif is_charging:
-		 $AnimatedSprite2D.play("charge")
-	 elif direction != Vector2.ZERO:
-		 $AnimatedSprite2D.play("run")
-	 else:         
+	if direction.x <0:
+		$AnimatedSprite2D.flip_h = true
+	elif direction.x > 0:
+		$AnimatedSprite2D.flip_h = false
+	if is_dashing:
+		$AnimatedSprite2D.play("dash")
+	elif is_charging:
+		$AnimatedSprite2D.play("charge")
+	elif direction != Vector2.ZERO:
+		$AnimatedSprite2D.play("run")
+	else:         
 		$AnimatedSprite2D.play("idle")
 	
 func _on_dash_timer_timeout():

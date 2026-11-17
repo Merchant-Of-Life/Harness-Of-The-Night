@@ -4,7 +4,9 @@ extends Node2D
 @onready var props_layer = $PropsLayer
 
 var arena_radius = 60
+var floor_radius = 80
 var safe_spawn_radius = 8
+var min_obstacle_spacing = 8
 
 var GRASS_SOURCE_ID = 0
 var STONE_SOURCE_ID = 1
@@ -36,7 +38,7 @@ var stone_tiles = [
 var tree_tiles = [
 	Vector2i(0, 0),
 	Vector2i(5, 0),
-	Vector2i(9, 0)
+	Vector2i(10, 0)
 ]
 
 var prop_tiles = [
@@ -45,9 +47,12 @@ var prop_tiles = [
 	Vector2i(7, 5),
 	Vector2i(7, 7),
 	Vector2i(7, 9),
+	Vector2i(9, 5),
 	Vector2i(11, 5),
 	Vector2i(13, 6)
 ]
+
+var placed_obstacles = []
 
 func _ready():
 	generate_arena()
@@ -55,9 +60,10 @@ func _ready():
 func generate_arena():
 	ground_layer.clear()
 	props_layer.clear()
+	placed_obstacles.clear()
 	
-	for tile_x in range(-arena_radius, arena_radius + 1):
-		for tile_y in range (-arena_radius, arena_radius +1):
+	for tile_x in range(-floor_radius, floor_radius + 1):
+		for tile_y in range (-floor_radius, floor_radius + 1):
 			var cell_pos = Vector2i(tile_x, tile_y)
 			
 			var ground_roll = randf()
@@ -67,6 +73,10 @@ func generate_arena():
 				ground_layer.set_cell(cell_pos, GRASS_SOURCE_ID, cobble_tiles.pick_random())
 			else:
 				ground_layer.set_cell(cell_pos, GRASS_SOURCE_ID, grass_tiles.pick_random())
+			
+			if abs(tile_x) > arena_radius or abs(tile_y) > arena_radius:
+				continue
+			
 			if abs(tile_x) == arena_radius or abs(tile_y) == arena_radius:
 				props_layer.set_cell(cell_pos, PROPS_SOURCE_ID, Vector2i(11, 5))
 				continue
@@ -76,8 +86,15 @@ func generate_arena():
 				continue
 				
 			var obstacle_roll = randf()
-			if obstacle_roll <0.02:
-				props_layer.set_cell(cell_pos, PLANT_SOURCE_ID, tree_tiles.pick_random())
-			elif obstacle_roll <0.045:
-				props_layer.set_cell(cell_pos, PROPS_SOURCE_ID, prop_tiles.pick_random())
-			
+			if obstacle_roll <0.035 and is_space_clear(cell_pos):
+				if obstacle_roll < 0.015:
+					props_layer.set_cell(cell_pos, PLANT_SOURCE_ID, tree_tiles.pick_random())
+				else:
+					props_layer.set_cell(cell_pos, PROPS_SOURCE_ID, prop_tiles.pick_random())
+				placed_obstacles.append(cell_pos)
+
+func is_space_clear(pos):
+	for other_pos in placed_obstacles:
+		if Vector2(pos).distance_to(Vector2(other_pos)) < min_obstacle_spacing:
+			return false
+	return true

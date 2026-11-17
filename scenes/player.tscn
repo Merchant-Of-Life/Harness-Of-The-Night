@@ -309,6 +309,7 @@ fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
 [node name="Player" type="CharacterBody2D" unique_id=629741390]
+scale = Vector2(0.5, 0.5)
 motion_mode = 1
 script = ExtResource("1_g2els")
 

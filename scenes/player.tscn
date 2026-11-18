@@ -294,8 +294,8 @@ animations = [{
 "speed": 12.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_neqau"]
-radius = 20.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_o6xl0"]
+radius = 12.0
 
 [sub_resource type="Gradient" id="Gradient_g2els"]
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 0)
@@ -314,13 +314,14 @@ motion_mode = 1
 script = ExtResource("1_g2els")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1078396220]
+position = Vector2(2, -20)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_neqau")
 animation = &"idle"
 frame_progress = 0.697264
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1404218332]
-shape = SubResource("CircleShape2D_neqau")
+shape = SubResource("CapsuleShape2D_o6xl0")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=531956043]
 position_smoothing_enabled = true

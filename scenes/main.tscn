@@ -305,7 +305,7 @@ y_sort_enabled = true
 script = ExtResource("1_tefeu")
 
 [node name="GroundLayer" type="TileMapLayer" parent="." unique_id=1648696765]
-z_index = -1
+z_index = -2
 tile_set = SubResource("TileSet_yj5yf")
 
 [node name="PropsLayer" type="TileMapLayer" parent="." unique_id=2122518341]

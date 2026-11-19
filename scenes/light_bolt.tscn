@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://bo6gksy1ihu6n"]
+
+[ext_resource type="Texture2D" uid="uid://bsmgj71olo0l6" path="res://assets/projectiles/Fire_03_Black.png" id="1_d8n65"]
+[ext_resource type="Script" uid="uid://clk3qx81fqmjd" path="res://scenes/light_bolt.gd" id="1_m2bns"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m2bns"]
+atlas = ExtResource("1_d8n65")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v4nop"]
+atlas = ExtResource("1_d8n65")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_46ufg"]
+atlas = ExtResource("1_d8n65")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nll88"]
+atlas = ExtResource("1_d8n65")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fsi7o"]
+atlas = ExtResource("1_d8n65")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4i46w"]
+atlas = ExtResource("1_d8n65")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iwx6f"]
+atlas = ExtResource("1_d8n65")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ldbct"]
+atlas = ExtResource("1_d8n65")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_neqau"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m2bns")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v4nop")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_46ufg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nll88")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fsi7o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4i46w")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iwx6f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ldbct")
+}],
+"loop": 1,
+"name": &"fly",
+"speed": 14.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_d8n65"]
+radius = 5.0
+
+[sub_resource type="Gradient" id="Gradient_uyngg"]
+offsets = PackedFloat32Array(0.009259259, 1)
+colors = PackedColorArray(1.353256, 1.353256, 1.353256, 1, 1.353256, 1.353256, 1.353256, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_m2bns"]
+gradient = SubResource("Gradient_uyngg")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="LightBolt" type="Area2D" unique_id=955200032]
+script = ExtResource("1_m2bns")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2006223073]
+rotation = -1.5707964
+sprite_frames = SubResource("SpriteFrames_neqau")
+animation = &"fly"
+autoplay = "fly"
+frame_progress = 0.7335052
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=817735157]
+shape = SubResource("CircleShape2D_d8n65")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=1230495499]
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=1972822563]
+color = Color(1, 0.9529412, 0.8, 1)
+energy = 1.1
+texture = SubResource("GradientTexture2D_m2bns")

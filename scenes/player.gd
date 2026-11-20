@@ -1,7 +1,15 @@
 extends CharacterBody2D
 
+
 var attack_style = "magic"
 var projectile_scene = preload("res://scenes/fireball.tscn")
+var max_hp = 3
+var hp = 3
+var power = 1
+var is_invulnerable = false
+var is_dead = false
+var is_hit_flashing = false
+var flash_steps = 0
 
 var speed = 220
 var dash_speed = 650
@@ -21,9 +29,13 @@ var currect_charges = 6
 @onready var cooldown_timer = $CooldownTimer
 
 func _ready():
+	hp = max_hp
 	book_sprite.play("open")
 
 func _physics_process(delta):
+	if is_dead:
+		return
+		
 	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	
 	if Input.is_action_just_pressed("dash") and can_dash and direction != Vector2.ZERO:
@@ -70,7 +82,9 @@ func update_animation(direction):
 	else:
 		$AnimatedSprite2D.flip_h = false
 		
-	if is_dashing:
+	if is_hit_flashing:
+		$AnimatedSprite2D.play("hit")
+	elif is_dashing:
 		$AnimatedSprite2D.play("dash")
 	elif direction != Vector2.ZERO:
 		$AnimatedSprite2D.play("run")
@@ -86,6 +100,7 @@ func fire_projectile():
 	projectile.global_position = book_sprite.global_position
 	projectile.direction = aim_direction
 	projectile.rotation = aim_direction.angle()
+	projectile.damage = power
 	
 	get_parent().add_child(projectile)
 	
@@ -107,3 +122,42 @@ func _on_recharge_timer_timeout():
 	currect_charges = max_charges
 	is_charging = false
 	book_sprite.play("open")
+	
+func _on_hit_flash_timer_timeout():
+	flash_steps += 1
+	if flash_steps >= 6:
+		is_hit_flashing = false
+		$HitFlashTimer.stop()
+	else:
+		is_hit_flashing = not is_hit_flashing
+
+func _on_iframes_timeout():
+	is_invulnerable = false
+	is_hit_flashing = false
+
+func die():
+	is_dead = true
+	is_hit_flashing = false
+	$HitFlashTimer.stop()
+	velocity = Vector2.ZERO
+	book.visible = false
+	$CollisionShape2D.set_deferred("disabled", "true")
+	animated_sprite.play("death")
+	$DeathTimer.start()
+	
+func take_damage(amount):
+	if is_invulnerable or is_dead:
+		return
+	hp -= amount
+	print("Player HP: ", hp)
+	if hp <= 0:
+		die()
+	else:
+		is_invulnerable = true
+		is_hit_flashing = true
+		flash_steps = 0
+		$Iframes.start()
+		$HitFlashTimer.start()
+		
+func _on_death_timer_timeout():
+	get_tree().reload_current_scene()

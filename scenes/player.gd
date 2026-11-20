@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 var attack_style = "magic"
-var projectile_scene = preload("res://scenes/light_bolt.tscn")
+var projectile_scene = preload("res://scenes/fireball.tscn")
 
 var speed = 220
 var dash_speed = 650
@@ -10,6 +10,7 @@ var can_dash = true
 var is_charging = false
 var dash_direction = Vector2.ZERO
 var orbit_radius = 50
+var aim_angle = 0.0
 var max_charges = 6
 var currect_charges = 6
 
@@ -38,7 +39,7 @@ func _physics_process(delta):
 		velocity = direction * speed
 		
 	move_and_slide()
-	update_book_orbit()
+	update_book_orbit(delta)
 	
 	if Input.is_action_just_pressed("recharge") and not is_charging and not is_dashing:
 		start_recharge()
@@ -50,10 +51,12 @@ func _physics_process(delta):
 				start_recharge()
 	update_animation(direction)
 	
-func update_book_orbit():
-	var aim_direction = (get_global_mouse_position() - book_sprite.global_position).normalized()
-	if aim_direction == Vector2.ZERO:
-		aim_direction = Vector2.RIGHT
+func update_book_orbit(delta):
+	var mouse_offset = (get_global_mouse_position() - book_sprite.global_position)
+	if mouse_offset.length() > 15.0:
+		var target_angle = mouse_offset.angle()
+		aim_angle = lerp_angle(aim_angle, target_angle, 12.0 * delta)
+	var aim_direction = Vector2.from_angle(aim_angle)
 	book_sprite.position = aim_direction * orbit_radius
 	if aim_direction.y < 0:
 		book_sprite.z_index = -1

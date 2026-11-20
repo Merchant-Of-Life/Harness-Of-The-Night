@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://5rlolywanq2r" path="res://assets/tileset/TX Props.png" id="3_o6xl0"]
 [ext_resource type="Texture2D" uid="uid://dyavoukre8206" path="res://assets/tileset/TX Plant.png" id="4_tipki"]
 [ext_resource type="PackedScene" uid="uid://b88snivw0c06i" path="res://scenes/player.tscn" id="6_tefeu"]
+[ext_resource type="PackedScene" uid="uid://drexewgatex72" path="res://scenes/bat.tscn" id="7_o6xl0"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_85g3d"]
 texture = ExtResource("1_tbgi4")
@@ -295,6 +296,7 @@ texture_region_size = Vector2i(32, 32)
 [sub_resource type="TileSet" id="TileSet_yj5yf"]
 tile_size = Vector2i(32, 32)
 physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 0
 sources/1 = SubResource("TileSetAtlasSource_choun")
 sources/2 = SubResource("TileSetAtlasSource_ya4ey")
 sources/0 = SubResource("TileSetAtlasSource_85g3d")
@@ -317,4 +319,6 @@ color = Color(0.078431375, 0.09411765, 0.14117648, 1)
 
 [node name="Player" parent="." unique_id=629741390 instance=ExtResource("6_tefeu")]
 y_sort_enabled = true
-position = Vector2(-112.93271, -50.506676)
+
+[node name="Bat" parent="." unique_id=396653102 instance=ExtResource("7_o6xl0")]
+position = Vector2(-264, 189)

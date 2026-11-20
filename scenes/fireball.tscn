@@ -1,38 +1,38 @@
 [gd_scene format=3 uid="uid://bo6gksy1ihu6n"]
 
-[ext_resource type="Texture2D" uid="uid://bsmgj71olo0l6" path="res://assets/projectiles/Fire_03_Black.png" id="1_d8n65"]
-[ext_resource type="Script" uid="uid://clk3qx81fqmjd" path="res://scenes/light_bolt.gd" id="1_m2bns"]
+[ext_resource type="Script" uid="uid://clk3qx81fqmjd" path="res://scenes/fireball.gd" id="1_1gl40"]
+[ext_resource type="Texture2D" uid="uid://bsmgj71olo0l6" path="res://assets/projectiles/Fire_03_Black.png" id="2_cb14k"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m2bns"]
-atlas = ExtResource("1_d8n65")
+atlas = ExtResource("2_cb14k")
 region = Rect2(0, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_v4nop"]
-atlas = ExtResource("1_d8n65")
+atlas = ExtResource("2_cb14k")
 region = Rect2(32, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_46ufg"]
-atlas = ExtResource("1_d8n65")
+atlas = ExtResource("2_cb14k")
 region = Rect2(64, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_nll88"]
-atlas = ExtResource("1_d8n65")
+atlas = ExtResource("2_cb14k")
 region = Rect2(96, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fsi7o"]
-atlas = ExtResource("1_d8n65")
+atlas = ExtResource("2_cb14k")
 region = Rect2(128, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4i46w"]
-atlas = ExtResource("1_d8n65")
+atlas = ExtResource("2_cb14k")
 region = Rect2(160, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_iwx6f"]
-atlas = ExtResource("1_d8n65")
+atlas = ExtResource("2_cb14k")
 region = Rect2(192, 0, 32, 32)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ldbct"]
-atlas = ExtResource("1_d8n65")
+atlas = ExtResource("2_cb14k")
 region = Rect2(224, 0, 32, 32)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_neqau"]
@@ -80,8 +80,10 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(0.5, 0)
 
-[node name="LightBolt" type="Area2D" unique_id=955200032]
-script = ExtResource("1_m2bns")
+[node name="Fireball" type="Area2D" unique_id=955200032]
+collision_layer = 8
+collision_mask = 4
+script = ExtResource("1_1gl40")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2006223073]
 rotation = -1.5707964
@@ -99,3 +101,5 @@ shape = SubResource("CircleShape2D_d8n65")
 color = Color(1, 0.9529412, 0.8, 1)
 energy = 1.1
 texture = SubResource("GradientTexture2D_m2bns")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

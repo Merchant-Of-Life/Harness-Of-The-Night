@@ -1,0 +1,143 @@
+[gd_scene format=3 uid="uid://drexewgatex72"]
+
+[ext_resource type="Script" uid="uid://cunnvukvn532t" path="res://scenes/bat.gd" id="1_cnldk"]
+[ext_resource type="Texture2D" uid="uid://b2te21mr7a5ux" path="res://assets/enemy/Bat_Full.png" id="1_uhqni"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cnldk"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(256, 128, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_48wkk"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(0, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ss3tx"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(64, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lv0ya"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(128, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5fn3r"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(192, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8qtcx"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(256, 192, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x4bhu"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(0, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k0o7o"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(64, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_67y1s"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(128, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p5otw"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(192, 256, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vjjhm"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(64, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n8eff"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(128, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rrah6"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(192, 0, 64, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_drkvk"]
+atlas = ExtResource("1_uhqni")
+region = Rect2(256, 0, 64, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_nol5w"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cnldk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_48wkk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ss3tx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lv0ya")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5fn3r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8qtcx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x4bhu")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k0o7o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_67y1s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p5otw")
+}],
+"loop": 0,
+"name": &"death",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vjjhm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n8eff")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rrah6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_drkvk")
+}],
+"loop": 1,
+"name": &"fly",
+"speed": 10.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cnldk"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_48wkk"]
+radius = 12.0
+
+[node name="Bat" type="CharacterBody2D" unique_id=396653102 groups=["enemies"]]
+collision_layer = 4
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_cnldk")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1018709456]
+sprite_frames = SubResource("SpriteFrames_nol5w")
+animation = &"death"
+autoplay = "death"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1827363629]
+shape = SubResource("CircleShape2D_cnldk")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=228611502]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1679914831]
+shape = SubResource("CircleShape2D_48wkk")
+
+[connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]

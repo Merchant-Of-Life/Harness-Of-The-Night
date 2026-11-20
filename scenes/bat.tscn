@@ -129,6 +129,8 @@ script = ExtResource("1_cnldk")
 sprite_frames = SubResource("SpriteFrames_nol5w")
 animation = &"death"
 autoplay = "death"
+frame = 9
+frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1827363629]
 shape = SubResource("CircleShape2D_cnldk")
@@ -140,4 +142,5 @@ collision_mask = 2
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1679914831]
 shape = SubResource("CircleShape2D_48wkk")
 
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]

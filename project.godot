@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Harness of the night"
-run/main_scene="uid://bvoxxeliicdl3"
+run/main_scene="uid://canhh42cunewn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameData="*uid://bsywmbg57eelr"
 
 [display]
 

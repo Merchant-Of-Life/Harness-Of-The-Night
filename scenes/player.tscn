@@ -349,12 +349,13 @@ position = Vector2(2, -20)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_neqau")
 animation = &"hit"
-frame_progress = 0.08626461
+frame_progress = 0.8083177
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1404218332]
 shape = SubResource("CapsuleShape2D_o6xl0")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=531956043]
+zoom = Vector2(1.3, 1.3)
 position_smoothing_enabled = true
 
 [node name="PointLight2D" type="PointLight2D" parent="." unique_id=682427259]

@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-var speed = 200
+var speed = 170
 var max_hp = 1
 var hp = 1
 var damage = 1

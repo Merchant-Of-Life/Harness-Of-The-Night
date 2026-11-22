@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://bdrokx1kiw2ln" path="res://ui/pause_menu.tscn" id="8_tipki"]
 [ext_resource type="PackedScene" uid="uid://dsunnuiwebq56" path="res://ui/game_over.tscn" id="9_85g3d"]
 [ext_resource type="PackedScene" uid="uid://b8qp54y232k77" path="res://ui/victory.tscn" id="10_choun"]
+[ext_resource type="PackedScene" uid="uid://b82tjygv58stt" path="res://ui/level_up.tscn" id="11_ya4ey"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_85g3d"]
 texture = ExtResource("1_tbgi4")
@@ -337,6 +338,8 @@ autostart = true
 [node name="GameOver" parent="." unique_id=1441880097 instance=ExtResource("9_85g3d")]
 
 [node name="Victory" parent="." unique_id=629682145 instance=ExtResource("10_choun")]
+
+[node name="LevelUp" parent="." unique_id=530704643 instance=ExtResource("11_ya4ey")]
 
 [connection signal="timeout" from="SpawnTimer" to="." method="_on_spawn_timer_timeout"]
 [connection signal="timeout" from="GameTimer" to="." method="_on_game_timer_timeout"]

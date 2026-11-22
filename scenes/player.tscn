@@ -349,7 +349,7 @@ position = Vector2(2, -20)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_neqau")
 animation = &"dash"
-frame_progress = 0.8720776
+frame_progress = 0.36294293
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1404218332]
 shape = SubResource("CapsuleShape2D_o6xl0")

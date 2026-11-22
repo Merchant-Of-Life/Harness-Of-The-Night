@@ -9,6 +9,8 @@ var power = 1
 var level = 1
 var current_xp = 0
 var xp_to_next_level = 10
+var krakens_stack = 0
+var pending_level_ups = 0
 var is_invulnerable = false
 var is_dead = false
 var is_hit_flashing = false
@@ -103,12 +105,20 @@ func fire_projectile():
 	projectile.global_position = book_sprite.global_position
 	projectile.direction = aim_direction
 	projectile.rotation = aim_direction.angle()
-	projectile.damage = power
+	
+	var final_damage = float(power)
+	for i in range(krakens_stack):
+		if randf() <= 0.60:
+			final_damage *= 1.50
+		else:
+			final_damage *= 0.90
+	projectile.damage = final_damage
 	
 	get_parent().add_child(projectile)
 	
 	if currect_charges <= 0:
 		start_recharge()
+
 		
 func start_recharge():
 	is_charging = true
@@ -166,7 +176,7 @@ func _on_death_timer_timeout():
 	if get_parent().has_method("show_game_over"):
 		get_parent().show_game_over()
 
-func gain_xp(ammount):
+func gain_xp(ammount):	
 	if is_dead:
 		return
 		
@@ -176,4 +186,14 @@ func gain_xp(ammount):
 		current_xp -= xp_to_next_level
 		level += 1
 		xp_to_next_level = round(xp_to_next_level * 1.2)
+		pending_level_ups += 1
 		print("Level Up! Now Level: ", level, " Next XP needed: ", xp_to_next_level)
+		
+	check_pending_level_ups()
+	
+func check_pending_level_ups():
+	if pending_level_ups > 0 and not is_dead:
+		var level_up_ui = get_parent().get_node_or_null("LevelUp")
+		if level_up_ui != null and not level_up_ui.visible:
+			pending_level_ups -= 1
+			level_up_ui.open_level_up()

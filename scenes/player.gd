@@ -165,3 +165,15 @@ func take_damage(amount):
 func _on_death_timer_timeout():
 	if get_parent().has_method("show_game_over"):
 		get_parent().show_game_over()
+
+func gain_xp(ammount):
+	if is_dead:
+		return
+		
+	current_xp += ammount
+	
+	while current_xp >= xp_to_next_level:
+		current_xp -= xp_to_next_level
+		level += 1
+		xp_to_next_level = round(xp_to_next_level * 1.2)
+		print("Level Up! Now Level: ", level, " Next XP needed: ", xp_to_next_level)

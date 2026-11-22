@@ -154,7 +154,8 @@ func _on_spawn_timer_timeout():
 	
 		if elapsed_seconds >= 240:
 			bat.max_hp = 2
-			bat.speed = 225
+			bat.speed = 210
+			bat.xp_reward = 1.5
 			
 		var random_angle = randf() * TAU
 		var spawn_distance = randf_range(620, 750)

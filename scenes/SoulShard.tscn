@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://d1qawm2vgumjd"]
+
+[ext_resource type="Script" uid="uid://cikivhte7wojy" path="res://scenes/soul_shard.gd" id="1_4r7ek"]
+[ext_resource type="Texture2D" uid="uid://d84sgk68f88u" path="res://assets/soul/soul.webp" id="2_vplkn"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_k2gm0"]
+
+[sub_resource type="Gradient" id="Gradient_uyngg"]
+offsets = PackedFloat32Array(0.009259259, 1)
+colors = PackedColorArray(1.353256, 1.353256, 1.353256, 1, 1.353256, 1.353256, 1.353256, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ge4e8"]
+gradient = SubResource("Gradient_uyngg")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[node name="SoulShard" type="Area2D" unique_id=1212422488]
+y_sort_enabled = true
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_4r7ek")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1477620663]
+texture = ExtResource("2_vplkn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1388372174]
+shape = SubResource("CircleShape2D_k2gm0")
+
+[node name="PointLight2D" type="PointLight2D" parent="." unique_id=1952429315]
+color = Color(1, 0.23137255, 0.30588236, 1)
+energy = 0.35
+texture = SubResource("GradientTexture2D_ge4e8")
+texture_scale = 0.4
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

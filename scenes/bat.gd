@@ -1,14 +1,16 @@
 extends CharacterBody2D
 
-var speed = 210
+var speed = 200
 var max_hp = 1
 var hp = 1
 var damage = 1
+var xp_reward = 1
 var is_dead = false
 
 var player = null
 
 @onready var animated_sprite = $AnimatedSprite2D
+var xp_shard_scene = preload("res://scenes/SoulShard.tscn")
 
 func _ready():
 	hp = max_hp
@@ -49,7 +51,14 @@ func die():
 	velocity = Vector2.ZERO
 	$CollisionShape2D.set_deferred("disabled", true)
 	$Hitbox/CollisionShape2D.set_deferred("disabled", true)
+	drop_xp()
 	animated_sprite.play("death")
+	
+func drop_xp():
+	var shard = xp_shard_scene.instantiate()
+	shard.global_position = global_position
+	shard.xp_value = xp_reward
+	get_parent().call_deferred("add_child", shard)
 	
 func _on_animated_sprite_2d_animation_finished():
 	if animated_sprite.animation == "death":

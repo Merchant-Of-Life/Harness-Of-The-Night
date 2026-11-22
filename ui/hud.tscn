@@ -6,7 +6,6 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_neqau"]
 bg_color = Color(0.078431375, 0.02745098, 0.039215688, 1)
-border_width_top = 2
 border_color = Color(0.23921569, 0.047058824, 0.078431375, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ko505"]
@@ -61,7 +60,7 @@ anchors_preset = -1
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -24.0
+offset_top = -20.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_styles/background = SubResource("StyleBoxFlat_neqau")

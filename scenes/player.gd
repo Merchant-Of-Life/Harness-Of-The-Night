@@ -163,4 +163,5 @@ func take_damage(amount):
 		$HitFlashTimer.start()
 		
 func _on_death_timer_timeout():
-	get_tree().reload_current_scene()
+	if get_parent().has_method("show_game_over"):
+		get_parent().show_game_over()

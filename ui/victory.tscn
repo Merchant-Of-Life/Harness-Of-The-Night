@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://b8qp54y232k77"]
+
+[ext_resource type="Script" uid="uid://bfj31ykosceu1" path="res://ui/victory.gd" id="1_qa52b"]
+[ext_resource type="FontFile" uid="uid://dc04v0tmqpwnb" path="res://assets/fonts/MiniCard.ttf" id="1_uhicc"]
+[ext_resource type="FontFile" uid="uid://cenjex7vgcjv1" path="res://assets/fonts/MiniSerif.ttf" id="2_qa52b"]
+
+[node name="Victory" type="CanvasLayer" unique_id=629682145]
+process_mode = 3
+layer = 3
+script = ExtResource("1_qa52b")
+
+[node name="Overlay" type="ColorRect" parent="." unique_id=1831058381]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.03137255, 0.039215688, 0.07058824, 0.78431374)
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=777481218]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=2093326201]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1257981762]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9490196, 0.8745098, 0.6431373, 1)
+theme_override_constants/outline_size = 4
+theme_override_fonts/font = ExtResource("1_uhicc")
+theme_override_font_sizes/font_size = 32
+text = "In The Night, You Were The Light"
+horizontal_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=744157932]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_qa52b")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="ModeLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=556327114]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_qa52b")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="LevelLabel" type="Label" parent="CenterContainer/VBoxContainer" unique_id=854097702]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("2_qa52b")
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 1
+
+[node name="MainMenuButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=123210064]
+custom_minimum_size = Vector2(240, 52)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_qa52b")
+theme_override_font_sizes/font_size = 22
+text = "Main Menu"
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/MainMenuButton" to="." method="_on_main_menu_button_pressed"]

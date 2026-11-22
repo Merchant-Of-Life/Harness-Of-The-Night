@@ -5,6 +5,8 @@ extends Node2D
 @onready var player = $Player
 @onready var spawn_timer = $SpawnTimer
 @onready var game_timer = $GameTimer
+@onready var game_over_screen = $GameOver
+@onready var victory_screen = $Victory
 
 var bat_scene = preload("res://scenes/bat.tscn")
 
@@ -188,4 +190,16 @@ func win_run():
 	for enemy in active_enemies:
 		enemy.queue_free()
 		
-	print("You Survived the night")
+	var current_level = 1
+	if player != null:
+		current_level = player.level
+	victory_screen.show_screen(elapsed_seconds, GameData.game_mode, current_level) 
+	
+func show_game_over():
+	spawn_timer.stop()
+	game_timer.stop()
+	
+	var current_level = 1
+	if player != null:
+		current_level = player.level
+	game_over_screen.show_screen(elapsed_seconds, GameData.game_mode, current_level)

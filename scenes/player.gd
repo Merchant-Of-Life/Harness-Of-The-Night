@@ -3,8 +3,8 @@ extends CharacterBody2D
 
 var attack_style = "magic"
 var projectile_scene = preload("res://scenes/fireball.tscn")
-var max_hp = 3
-var hp = 3
+var max_hp = 10
+var hp = 10
 var power = 1
 var level = 1
 var current_xp = 0

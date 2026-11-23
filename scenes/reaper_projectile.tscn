@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://d08kyge7bq717"]
+
+[ext_resource type="Script" uid="uid://cublik2brsrxd" path="res://reaper_projectile.gd" id="1_kbgse"]
+[ext_resource type="Texture2D" uid="uid://db8jocn0xe838" path="res://assets/projectiles/reaper_fire.png" id="2_edk7p"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j2nbl"]
+atlas = ExtResource("2_edk7p")
+region = Rect2(0, 0, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v0b1u"]
+atlas = ExtResource("2_edk7p")
+region = Rect2(56, 0, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gxgwt"]
+atlas = ExtResource("2_edk7p")
+region = Rect2(112, 0, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ccupj"]
+atlas = ExtResource("2_edk7p")
+region = Rect2(168, 0, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5b7gx"]
+atlas = ExtResource("2_edk7p")
+region = Rect2(224, 0, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6v8rh"]
+atlas = ExtResource("2_edk7p")
+region = Rect2(280, 0, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0ph1i"]
+atlas = ExtResource("2_edk7p")
+region = Rect2(336, 0, 56, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5ixgy"]
+atlas = ExtResource("2_edk7p")
+region = Rect2(392, 0, 56, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_neqau"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j2nbl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v0b1u")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gxgwt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ccupj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5b7gx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6v8rh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0ph1i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5ixgy")
+}],
+"loop": 1,
+"name": &"fly",
+"speed": 14.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ko505"]
+radius = 5.0
+
+[node name="ReaperProjectile" type="Area2D" unique_id=677165563]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_kbgse")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=559015075]
+sprite_frames = SubResource("SpriteFrames_neqau")
+animation = &"fly"
+autoplay = "fly"
+frame_progress = 0.713359
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1070991273]
+position = Vector2(15, 0)
+shape = SubResource("CircleShape2D_ko505")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="." unique_id=317351688]
+visible = false
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]

@@ -1,0 +1,147 @@
+[gd_scene format=3 uid="uid://cwbq144lbpvyw"]
+
+[ext_resource type="Script" uid="uid://bvu1fq8yvutjx" path="res://reaper.gd" id="1_01fq5"]
+[ext_resource type="Texture2D" uid="uid://78028dvid5ui" path="res://assets/enemy/Reaper/reaper attack.png" id="2_mgqsx"]
+[ext_resource type="Texture2D" uid="uid://bucicoxwdce15" path="res://assets/enemy/Reaper/reaperdeath.png" id="3_2gvjm"]
+[ext_resource type="Texture2D" uid="uid://mn5d0m1nmwak" path="res://assets/enemy/Reaper/reaper idle.png" id="4_o6vbn"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iaock"]
+atlas = ExtResource("2_mgqsx")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5qkj7"]
+atlas = ExtResource("2_mgqsx")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ehffs"]
+atlas = ExtResource("2_mgqsx")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p04ry"]
+atlas = ExtResource("2_mgqsx")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2208f"]
+atlas = ExtResource("2_mgqsx")
+region = Rect2(0, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_216tc"]
+atlas = ExtResource("3_2gvjm")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0p6df"]
+atlas = ExtResource("3_2gvjm")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qlbnv"]
+atlas = ExtResource("3_2gvjm")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ejnkk"]
+atlas = ExtResource("3_2gvjm")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gg0y7"]
+atlas = ExtResource("4_o6vbn")
+region = Rect2(0, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u0mle"]
+atlas = ExtResource("4_o6vbn")
+region = Rect2(128, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7s0hp"]
+atlas = ExtResource("4_o6vbn")
+region = Rect2(256, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wyp8y"]
+atlas = ExtResource("4_o6vbn")
+region = Rect2(384, 0, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4ybln"]
+atlas = ExtResource("4_o6vbn")
+region = Rect2(0, 128, 128, 128)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_neqau"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iaock")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5qkj7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ehffs")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p04ry")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2208f")
+}],
+"loop": 0,
+"name": &"attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_216tc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0p6df")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qlbnv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ejnkk")
+}],
+"loop": 0,
+"name": &"death",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gg0y7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u0mle")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7s0hp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wyp8y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4ybln")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 8.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ko505"]
+radius = 15.0
+height = 40.0
+
+[node name="reaper" type="CharacterBody2D" unique_id=1660421314 groups=["enemies"]]
+collision_layer = 4
+motion_mode = 1
+script = ExtResource("1_01fq5")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=154151352]
+sprite_frames = SubResource("SpriteFrames_neqau")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1966703580]
+position = Vector2(2, 0)
+shape = SubResource("CapsuleShape2D_ko505")
+
+[node name="AttackCooldownTimer" type="Timer" parent="." unique_id=793492422]
+wait_time = 2.0
+one_shot = true
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="timeout" from="AttackCooldownTimer" to="." method="_on_attack_cooldown_timer_timeout"]

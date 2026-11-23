@@ -8,6 +8,8 @@ extends Node2D
 @onready var game_over_screen = $GameOver
 @onready var victory_screen = $Victory
 
+var reaper_scene = preload("res://scenes/reaper.tscn")
+var reaper_wave_counter = 0
 var bat_scene = preload("res://scenes/bat.tscn")
 
 var generate_radius = 24
@@ -19,7 +21,7 @@ var last_player_cell = Vector2i(999999, 999999)
 var generated_cells = {}
 var placed_obstacles = []
 
-var elapsed_seconds = 0
+var elapsed_seconds = 120
 var remaining_seconds = 600
 var max_enemies = 100
 var has_survived = false
@@ -154,7 +156,7 @@ func _on_spawn_timer_timeout():
 	
 		if elapsed_seconds >= 240:
 			bat.max_hp = 2
-			bat.speed = 210
+			bat.speed = 200
 			bat.xp_reward = 1.5
 			
 		var random_angle = randf() * TAU
@@ -163,6 +165,33 @@ func _on_spawn_timer_timeout():
 		bat.global_position = player.global_position + spawn_offset
 		
 		add_child(bat)
+		
+	if elapsed_seconds >= 120:
+		reaper_wave_counter += 1
+		if reaper_wave_counter >= 4:
+			reaper_wave_counter = 0
+			var reaper_to_spawn = 1
+			if elapsed_seconds >= 300:
+				reaper_to_spawn = 2
+			
+			for i in range(reaper_to_spawn):
+				var reaper = reaper_scene.instantiate()
+			
+				if elapsed_seconds >= 360:
+					reaper.max_hp = 5
+					reaper.xp_reward = 4
+				elif elapsed_seconds >= 240:
+					reaper.max_hp = 4
+					reaper.xp_reward = 3
+				elif elapsed_seconds >= 180:
+					reaper.max_hp = 3
+					reaper.xp_reward = 2.5
+				
+				var random_angle = randf() * TAU
+				var spawn_distance = randf_range(620, 750)
+				var spawn_offset = Vector2.from_angle(random_angle) * spawn_distance
+				reaper.global_position = player.global_position + spawn_offset
+				add_child(reaper)
 		
 	
 func _on_game_timer_timeout():

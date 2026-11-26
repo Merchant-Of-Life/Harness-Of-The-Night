@@ -1,29 +1,31 @@
 extends Area2D
+@export var magnet_radius: float = 110.0
+@export var move_speed: float = 350.0
 
-var xp_value = 1
-var magnet_radius = 40
-var move_speed = 350
-var is_magnetized = false
+var xp_value: float = 1.0
+var is_magnetized: bool = false
+var player: CharacterBody2D = null
+var collected: bool = false
 
-var player = null
-
-func _ready():
+func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player")
 	
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
 	if player == null or player.is_dead:
 		return
 		
-	var distance = global_position.distance_to(player.global_position)
-	if distance <= magnet_radius:
+	if not is_magnetized and global_position.distance_to(player.global_position) <= magnet_radius:
 		is_magnetized = true
 		
 	if is_magnetized:
-		var direction = global_position.direction_to(player.global_position)
+		var direction := global_position.direction_to(player.global_position)
 		global_position += direction * move_speed * delta
 		
-func _on_body_entered(body):
+func _on_body_entered(body: Node2D) -> void:
+	if collected:
+		return
 	if body.is_in_group("player"):
+		collected = true
 		if body.has_method("gain_xp"):
 			body.gain_xp(xp_value)
 		queue_free()

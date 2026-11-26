@@ -1,199 +1,223 @@
 extends CharacterBody2D
 
+signal hp_changed(current_hp: int, max_hp: int)
+signal ammo_changed(current_charges: int, max_charges: int, is_charging: bool)
+signal xp_changed(current_xp: float, xp_to_next: float, level: int)
+signal leveled_up
 
-var attack_style = "magic"
-var projectile_scene = preload("res://scenes/fireball.tscn")
-var max_hp = 10
-var hp = 10
-var power = 1
-var level = 1
-var current_xp = 0
-var xp_to_next_level = 10
-var krakens_stack = 0
-var pending_level_ups = 0
-var is_invulnerable = false
-var is_dead = false
-var is_hit_flashing = false
-var flash_steps = 0
+const FIREBALL_SCENE := preload("res://scenes/fireball.tscn")
 
-var speed = 220
-var dash_speed = 650
-var is_dashing = false
-var can_dash = true
-var is_charging = false
-var dash_direction = Vector2.ZERO
-var orbit_radius = 50
-var aim_angle = 0.0
-var max_charges = 6
-var currect_charges = 6
+@export var attack_style: String = "magic"
+@export var max_hp: int = 3
+@export var speed: float = 220.0
+@export var dash_speed: float = 650.0
+@export var max_charges: int = 6
 
-@onready var animated_sprite = $AnimatedSprite2D
-@onready var book = $Book
-@onready var book_sprite = $Book/BookSprite
-@onready var dash_timer = $DashTimer
-@onready var cooldown_timer = $CooldownTimer
+var hp: int = 3
+var power: int = 1
+var level: int = 1
+var current_xp: float = 0.0
+var xp_to_next_level: float = 10.0
+var krakens_stack: int = 0
+var pending_level_ups: int = 0
 
-func _ready():
+var is_invulnerable: bool = false
+var is_dead: bool = false
+var is_hit_flashing: bool = false
+var flash_steps: int = 0
+
+var is_dashing: bool = false
+var can_dash: bool = true
+var is_charging: bool = false
+var dash_direction: Vector2 = Vector2.ZERO
+var orbit_radius: float = 50.0
+var aim_angle: float = 0.0
+var current_charges: int = 6
+
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+@onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var book: Node2D = $Book
+@onready var book_sprite: AnimatedSprite2D = $Book/BookSprite
+@onready var dash_timer: Timer = $DashTimer
+@onready var cooldown_timer: Timer = $CooldownTimer
+@onready var attack_cooldown_timer: Timer = $AttackCooldownTimer
+@onready var recharge_timer: Timer = $RechargeTimer
+@onready var iframes_timer: Timer = $Iframes
+@onready var hit_flash_timer: Timer = $HitFlashTimer
+@onready var death_timer: Timer = $DeathTimer
+
+
+func _ready() -> void:
 	hp = max_hp
+	current_charges = max_charges
 	book_sprite.play("open")
-
-func _physics_process(delta):
+	hp_changed.emit(hp, max_hp)
+	ammo_changed.emit(current_charges, max_charges, is_charging)
+	xp_changed.emit(current_xp, xp_to_next_level, level)
+	
+func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
 		
-	var direction = Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	
+	var direction := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if Input.is_action_just_pressed("dash") and can_dash and direction != Vector2.ZERO:
 		is_dashing = true
 		can_dash = false
 		dash_direction = direction
-		$DashTimer.start()
-		$CooldownTimer.start()
-		
+		dash_timer.start()
+		cooldown_timer.start()
 	if is_dashing:
 		velocity = dash_direction * dash_speed
 	else:
 		velocity = direction * speed
-		
 	move_and_slide()
 	update_book_orbit(delta)
-	
-	if Input.is_action_just_pressed("recharge") and not is_charging and not is_dashing:
-		start_recharge()
-	if Input.is_action_pressed("attack") and not is_charging and not is_dashing:
-		if $AttackCooldownTimer.is_stopped():
-			if currect_charges > 0:
-				fire_projectile()
-			else:
-				start_recharge()
+	handle_combat_input()
 	update_animation(direction)
 	
-func update_book_orbit(delta):
-	var mouse_offset = (get_global_mouse_position() - book_sprite.global_position)
+func handle_combat_input() -> void:
+	if is_charging or is_dashing:
+		return
+	if Input.is_action_just_pressed("recharge") and current_charges < max_charges:
+		start_recharge()
+	elif Input.is_action_pressed("attack") and attack_cooldown_timer.is_stopped():
+		if current_charges > 0:
+			fire_projectile()
+		else:
+			start_recharge()
+			
+func update_book_orbit(delta: float) -> void:
+	var mouse_offset := get_global_mouse_position() - book.global_position
 	if mouse_offset.length() > 15.0:
-		var target_angle = mouse_offset.angle()
-		aim_angle = lerp_angle(aim_angle, target_angle, 12.0 * delta)
-	var aim_direction = Vector2.from_angle(aim_angle)
+		aim_angle = lerp_angle(aim_angle, mouse_offset.angle(), 12.0 * delta)
+		
+	var aim_direction := Vector2.from_angle(aim_angle)
 	book_sprite.position = aim_direction * orbit_radius
-	if aim_direction.y < 0:
-		book_sprite.z_index = -1
-	else:
-		book_sprite.z_index = 1
+	book_sprite.z_index = -1 if aim_direction.y < 0.0 else 1
 	
-func update_animation(direction):
-	var mouse_pos = get_global_mouse_position()
-	if mouse_pos.x < global_position.x:
-		$AnimatedSprite2D.flip_h = true
-	else:
-		$AnimatedSprite2D.flip_h = false
-		
+func update_animation(direction: Vector2) -> void:
+	animated_sprite.flip_h = get_global_mouse_position().x < global_position.x
 	if is_hit_flashing:
-		$AnimatedSprite2D.play("hit")
+		animated_sprite.play("hit")
 	elif is_dashing:
-		$AnimatedSprite2D.play("dash")
+		animated_sprite.play("dash")
 	elif direction != Vector2.ZERO:
-		$AnimatedSprite2D.play("run")
-	else:         
-		$AnimatedSprite2D.play("idle")
+		animated_sprite.play("run")
+	else:
+		animated_sprite.play("idle")
 		
-func fire_projectile():
-	currect_charges -= 1
-	$AttackCooldownTimer.start()
+func fire_projectile() -> void:
+	current_charges -= 1
+	ammo_changed.emit(current_charges, max_charges, is_charging)
+	attack_cooldown_timer.start()
 	
-	var projectile = projectile_scene.instantiate()
-	var aim_direction = (get_global_mouse_position() - book_sprite.global_position).normalized()
+	var projectile := FIREBALL_SCENE.instantiate()
+	var aim_direction := (get_global_mouse_position() - book_sprite.global_position).normalized()
 	projectile.global_position = book_sprite.global_position
 	projectile.direction = aim_direction
 	projectile.rotation = aim_direction.angle()
+	projectile.damage = calculate_shot_damage()
+	get_parent().add_child(projectile)
 	
-	var final_damage = float(power)
+	if current_charges <= 0:
+		start_recharge()
+		
+func calculate_shot_damage() -> float:
+	var final_damage := float(power)
 	for i in range(krakens_stack):
 		if randf() <= 0.60:
 			final_damage *= 1.50
 		else:
 			final_damage *= 0.90
-	projectile.damage = final_damage
+	return final_damage
 	
-	get_parent().add_child(projectile)
-	
-	if currect_charges <= 0:
-		start_recharge()
-
-		
-func start_recharge():
+func start_recharge() -> void:
 	is_charging = true
+	ammo_changed.emit(current_charges, max_charges, is_charging)
 	book_sprite.play_backwards("open")
-	$RechargeTimer.start()
+	recharge_timer.start()
 	
-func _on_dash_timer_timeout():
-	is_dashing = false
+func heal_and_increase_max_hp(amount: int) -> void:
+	max_hp += amount
+	hp = min(hp + amount, max_hp)
+	hp_changed.emit(hp, max_hp)
 	
-func _on_cooldown_timer_timeout():
-	can_dash = true
-
-func _on_recharge_timer_timeout():
-	currect_charges = max_charges
+func refill_and_increase_max_charges(amount: int) -> void:
+	max_charges += amount
+	current_charges = max_charges
 	is_charging = false
+	recharge_timer.stop()
 	book_sprite.play("open")
+	ammo_changed.emit(current_charges, max_charges, is_charging)
 	
-func _on_hit_flash_timer_timeout():
-	flash_steps += 1
-	if flash_steps >= 6:
-		is_hit_flashing = false
-		$HitFlashTimer.stop()
-	else:
-		is_hit_flashing = not is_hit_flashing
-
-func _on_iframes_timeout():
-	is_invulnerable = false
-	is_hit_flashing = false
-
-func die():
-	is_dead = true
-	is_hit_flashing = false
-	$HitFlashTimer.stop()
-	velocity = Vector2.ZERO
-	book.visible = false
-	$CollisionShape2D.set_deferred("disabled", "true")
-	animated_sprite.play("death")
-	$DeathTimer.start()
-	
-func take_damage(amount):
+func take_damage(amount: int) -> void:
 	if is_invulnerable or is_dead:
 		return
-	hp -= amount
-	print("Player HP: ", hp)
+		
+	hp = max(0, hp - amount)
+	hp_changed.emit(hp, max_hp)
+	
 	if hp <= 0:
 		die()
 	else:
 		is_invulnerable = true
 		is_hit_flashing = true
 		flash_steps = 0
-		$Iframes.start()
-		$HitFlashTimer.start()
+		iframes_timer.start()
+		hit_flash_timer.start()
 		
-func _on_death_timer_timeout():
-	if get_parent().has_method("show_game_over"):
-		get_parent().show_game_over()
-
-func gain_xp(ammount):	
+func die() -> void:
+	is_dead = true
+	is_hit_flashing = false
+	hit_flash_timer.stop()
+	velocity = Vector2.ZERO
+	book.visible = false
+	collision_shape.set_deferred("disabled", true)
+	animated_sprite.play("death")
+	death_timer.start()
+	
+func gain_xp(amount: float) -> void:
 	if is_dead:
 		return
 		
-	current_xp += ammount
-	
+	current_xp += amount
 	while current_xp >= xp_to_next_level:
 		current_xp -= xp_to_next_level
 		level += 1
 		xp_to_next_level = round(xp_to_next_level * 1.2)
 		pending_level_ups += 1
-		print("Level Up! Now Level: ", level, " Next XP needed: ", xp_to_next_level)
-		
+	xp_changed.emit(current_xp, xp_to_next_level, level)
 	check_pending_level_ups()
 	
-func check_pending_level_ups():
+func check_pending_level_ups() -> void:
 	if pending_level_ups > 0 and not is_dead:
-		var level_up_ui = get_parent().get_node_or_null("LevelUp")
-		if level_up_ui != null and not level_up_ui.visible:
-			pending_level_ups -= 1
-			level_up_ui.open_level_up()
+		pending_level_ups -= 1
+		leveled_up.emit()
+		
+func _on_dash_timer_timeout() -> void:
+	is_dashing = false
+	
+func _on_cooldown_timer_timeout() -> void:
+	can_dash = true
+	
+func _on_recharge_timer_timeout() -> void:
+	current_charges = max_charges
+	is_charging = false
+	book_sprite.play("open")
+	ammo_changed.emit(current_charges, max_charges, is_charging)
+	
+func _on_hit_flash_timer_timeout() -> void:
+	flash_steps += 1
+	if flash_steps >= 6:
+		is_hit_flashing = false
+		hit_flash_timer.stop()
+	else:
+		is_hit_flashing = not is_hit_flashing
+		
+func _on_iframes_timeout() -> void:
+	is_invulnerable = false
+	is_hit_flashing = false
+	
+func _on_death_timer_timeout() -> void:
+	if get_parent().has_method("show_game_over"):
+		get_parent().show_game_over()

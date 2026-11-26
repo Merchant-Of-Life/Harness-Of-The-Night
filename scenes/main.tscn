@@ -323,6 +323,11 @@ color = Color(0.078431375, 0.09411765, 0.14117648, 1)
 
 [node name="Player" parent="." unique_id=629741390 instance=ExtResource("6_tefeu")]
 y_sort_enabled = true
+attack_style = "magic"
+max_hp = 3
+speed = 220.0
+dash_speed = 650.0
+max_charges = 6
 
 [node name="SpawnTimer" type="Timer" parent="." unique_id=1870476767]
 wait_time = 2.0

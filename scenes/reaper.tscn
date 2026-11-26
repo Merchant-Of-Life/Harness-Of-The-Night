@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cwbq144lbpvyw"]
 
-[ext_resource type="Script" uid="uid://bvu1fq8yvutjx" path="res://reaper.gd" id="1_01fq5"]
+[ext_resource type="Script" uid="uid://boyqaydiq2j6b" path="res://scenes/reaper.gd" id="1_01fq5"]
 [ext_resource type="Texture2D" uid="uid://78028dvid5ui" path="res://assets/enemy/Reaper/reaper attack.png" id="2_mgqsx"]
 [ext_resource type="Texture2D" uid="uid://bucicoxwdce15" path="res://assets/enemy/Reaper/reaperdeath.png" id="3_2gvjm"]
 [ext_resource type="Texture2D" uid="uid://mn5d0m1nmwak" path="res://assets/enemy/Reaper/reaper idle.png" id="4_o6vbn"]

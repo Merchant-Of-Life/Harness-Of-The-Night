@@ -1,72 +1,76 @@
 extends CanvasLayer
 
-var heart_texture = preload("res://assets/UI/heart.png")
-var mini_card_font = preload("res://assets/fonts/MiniCard.ttf")
-var mini_serif_font = preload("res://assets/fonts/MiniSerif.ttf")
+const HEART_TEXTURE := preload("res://assets/UI/heart.png")
+const MINI_CARD_FONT := preload("res://assets/fonts/MiniCard.ttf")
+const MINI_SERIF_FONT := preload("res://assets/fonts/MiniSerif.ttf")
 
-@onready var hearts_container = $HeartsContainer
-@onready var timer_label = $TimerLabel
-@onready var ammo_label = $AmmoLabel
-@onready var xp_bar = $XPBar
-@onready var level_label = $XPBar/LevelLabel
+var main: Node2D = null
+var player: CharacterBody2D = null
+var last_max_hp: int = 0
+var last_charging_state: bool = false
 
-var player = null
-var main = null
-var last_max_hp = 0
+@onready var hearts_container: HBoxContainer = $HeartsContainer
+@onready var timer_label: Label = $TimerLabel
+@onready var ammo_label: Label = $AmmoLabel
+@onready var xp_bar: ProgressBar = $XPBar
+@onready var level_label: Label = $XPBar/LevelLabel
 
-func _ready():
+
+func _ready() -> void:
 	main = get_parent()
 	player = get_tree().get_first_node_in_group("player")
-	if player != null:
-		setup_hearts()
-		
-func _process(_delta):
-	if player == null or main == null:
+	if player == null:
 		return
-	if player.max_hp != last_max_hp:
-		setup_hearts()
 		
-	update_hearts()
-	update_timer()
-	update_ammo()
-	update_xp()
+	player.hp_changed.connect(_on_player_hp_changed)
+	player.ammo_changed.connect(_on_player_ammo_changed)
+	player.xp_changed.connect(_on_player_xp_changed)
+	_on_player_hp_changed(player.hp, player.max_hp)
+	_on_player_ammo_changed(player.current_charges, player.max_charges, player.is_charging)
+	_on_player_xp_changed(player.current_xp, player.xp_to_next_level, player.level)
 	
-func setup_hearts():
-	last_max_hp = player.max_hp
+func _process(_delta: float) -> void:
+	if main != null:
+		update_timer()
+		
+func _on_player_hp_changed(current_hp: int, max_hp: int) -> void:
+	if max_hp != last_max_hp:
+		rebuild_hearts(max_hp)
+		
+	var hearts := hearts_container.get_children()
+	for i in range(hearts.size()):
+		hearts[i].visible = i < current_hp
+		
+func rebuild_hearts(max_hp: int) -> void:
+	last_max_hp = max_hp
 	for child in hearts_container.get_children():
+		hearts_container.remove_child(child)
 		child.queue_free()
-	
-	for i in range(player.max_hp):
-		var heart = TextureRect.new()
-		heart.texture = heart_texture
+	for i in range(max_hp):
+		var heart := TextureRect.new()
+		heart.texture = HEART_TEXTURE
 		heart.custom_minimum_size = Vector2(32, 32)
 		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		hearts_container.add_child(heart)
 		
-func update_hearts():
-	var hearts = hearts_container.get_children()
-	for i in range(hearts.size()):
-		hearts[i].visible = i < player.hp
-
-func update_timer():
-	var display_seconds = 0
-	if GameData.game_mode == "quick" or GameData.game_mode == "standard":
-		display_seconds = main.remaining_seconds
-	else:
-		display_seconds = main.elapsed_seconds
-		
-	var minutes = int(display_seconds) / 60
-	var seconds = int(display_seconds) % 60
-	timer_label.text = "%02d:%02d" % [minutes, seconds]
-func update_ammo():
-	if player.is_charging:
-		ammo_label.add_theme_font_override("font", mini_serif_font)
+func _on_player_ammo_changed(current_charges: int, max_charges: int, is_charging: bool) -> void:
+	if is_charging != last_charging_state:
+		last_charging_state = is_charging
+		var active_font := MINI_SERIF_FONT if is_charging else MINI_CARD_FONT
+		ammo_label.add_theme_font_override("font", active_font)
+	if is_charging:
 		ammo_label.text = "Recharging..."
 	else:
-		ammo_label.add_theme_font_override("font", mini_card_font)
-		ammo_label.text = str(player.currect_charges) + " / " + str(player.max_charges)
-
-func update_xp():
-	xp_bar.max_value = player.xp_to_next_level
-	xp_bar.value = player.current_xp
-	level_label.text = "LEVEL " + str(player.level)
+		ammo_label.text = "%d / %d" % [current_charges, max_charges]
+		
+func _on_player_xp_changed(current_xp: float, xp_to_next: float, level: int) -> void:
+	xp_bar.max_value = xp_to_next
+	xp_bar.value = current_xp
+	level_label.text = "LEVEL %d" % level
+	
+func update_timer() -> void:
+	var display_seconds: int = main.remaining_seconds if GameData.is_timed_mode() else main.elapsed_seconds
+	@warning_ignore("integer_division")
+	var minutes := display_seconds / 60
+	var seconds := display_seconds % 60
+	timer_label.text = "%02d:%02d" % [minutes, seconds]

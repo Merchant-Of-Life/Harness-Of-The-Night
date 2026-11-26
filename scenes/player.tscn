@@ -343,6 +343,11 @@ scale = Vector2(0.5, 0.5)
 collision_layer = 2
 motion_mode = 1
 script = ExtResource("1_g2els")
+attack_style = null
+max_hp = null
+speed = null
+dash_speed = null
+max_charges = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1078396220]
 position = Vector2(2, -20)

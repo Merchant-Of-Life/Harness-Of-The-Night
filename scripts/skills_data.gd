@@ -67,6 +67,24 @@ const ALL_SKILLS: Array[Dictionary] = [
 		"name": "Soul Beacon",
 		"branch": "Lantern & Soul",
 		"desc": "+65% Soul Magnet &\n+20% XP Gained\n-20% Light Radius"
+	},
+	{
+		"id": "split_ember",
+		"name": "Split Ember",
+		"branch": "Pyromancy",
+		"desc": "+1 Projectile per shot\nin a fan spread\n-35% Damage per shot"
+	},
+	{
+		"id": "searing_lance",
+		"name": "Searing Lance",
+		"branch": "Pyromancy",
+		"desc": "Shots Pierce +1 enemy &\nfly +20 faster\n-1 Max Charge"
+	},
+	{
+		"id": "cerscendo",
+		"name": "Crescendo",
+		"branch": "Grimorire Mastery",
+		"desc": "Final charge deal 2.5x\ndmg & explodes\n-2 Max Charges (min 1)"
 	}
 ]
 

@@ -23,6 +23,11 @@ var xp_multiplier: float = 1.0
 var dodge_chance: float = 0.0
 var magnet_multiplier: float = 1.0
 var recharge_speed_multiplier: float = 1.0
+var projectile_count: int = 1
+var damage_multiplier: float = 1.0
+var projectile_speed_multiplier: float = 1.0
+var bonus_pierce: int = 0
+var has_crescendo: bool = false
 var pending_level_ups: int = 0
 
 var is_invulnerable: bool = false
@@ -73,7 +78,7 @@ func _physics_process(delta: float) -> void:
 	if is_dashing:
 		velocity = dash_direction * dash_speed
 	else:
-		var current_move_speed := speed
+		var current_move_speed: float = speed
 		if is_charging:
 			current_move_speed *= recharge_speed_multiplier
 		velocity = direction * current_move_speed
@@ -114,20 +119,35 @@ func update_animation(direction: Vector2) -> void:
 		
 func fire_projectile() -> void:
 	current_charges -= 1
+	var is_crescendo_shot: bool = has_crescendo and current_charges == 0
 	ammo_changed.emit(current_charges, max_charges, is_charging)
 	attack_cooldown_timer.start()
-	var projectile := FIREBALL_SCENE.instantiate()
-	var aim_direction := (get_global_mouse_position() - book_sprite.global_position).normalized()
-	projectile.global_position = book_sprite.global_position
-	projectile.direction = aim_direction
-	projectile.rotation = aim_direction.angle()
-	projectile.damage = calculate_shot_damage()
-	get_parent().add_child(projectile)
+	var base_direction: Vector2 = (get_global_mouse_position() - book_sprite.global_position).normalized()
+	var spread_step: float = deg_to_rad(12.0)
+	for i in range(projectile_count):
+		var angle_offset: float = (i - (projectile_count - 1) / 2.0) * spread_step
+		var shot_direction: Vector2 = base_direction.rotated(angle_offset)
+		spawn_fireball(shot_direction, is_crescendo_shot)
 	if current_charges <= 0:
 		start_recharge()
 		
+func spawn_fireball(shot_direction: Vector2, is_crescendo_shot: bool) -> void:
+	var projectile := FIREBALL_SCENE.instantiate()
+	projectile.global_position = book_sprite.global_position
+	projectile.direction = shot_direction
+	projectile.rotation = shot_direction.angle()
+	projectile.speed *= projectile_speed_multiplier
+	projectile.pierce_count = bonus_pierce
+	projectile.is_crescendo = is_crescendo_shot
+	var shot_damage: float = calculate_shot_damage()
+	if is_crescendo_shot:
+		shot_damage *= 2.5
+		projectile.scale *= 1.35
+	projectile.damage = shot_damage
+	get_parent().add_child(projectile)
+	
 func calculate_shot_damage() -> float:
-	var final_damage := float(power)
+	var final_damage: float = float(power) * damage_multiplier
 	for i in range(krakens_stack):
 		if randf() <= 0.60:
 			final_damage *= 1.60
@@ -177,6 +197,16 @@ func apply_skill(skill_id: String) -> void:
 			magnet_multiplier *= 1.65
 			xp_multiplier *= 1.20
 			point_light.texture_scale = max(0.35, point_light.texture_scale * 0.80)
+		"split_ember":
+			projectile_count += 1
+			damage_multiplier *= 0.65
+		"searing_lance":
+			bonus_pierce += 1
+			projectile_speed_multiplier *= 1.20
+			reduce_max_charges(1)
+		"crescendo":
+			has_crescendo = true
+			reduce_max_charges(2)
 			
 func heal_and_increase_max_hp(amount: int) -> void:
 	max_hp += amount
@@ -196,6 +226,14 @@ func refill_and_increase_max_charges(amount: int) -> void:
 	book_sprite.play("open")
 	ammo_changed.emit(current_charges, max_charges, is_charging)
 	
+func reduce_max_charges(amount: int) -> void:
+	max_charges = max(1, max_charges - amount)
+	current_charges = min(current_charges, max_charges)
+	if current_charges <= 0 and not is_charging:
+		start_recharge()
+	else:
+		ammo_changed.emit(current_charges, max_charges, is_charging)
+		
 func take_damage(amount: int) -> void:
 	if is_invulnerable or is_dead:
 		return
@@ -225,7 +263,6 @@ func die() -> void:
 func gain_xp(amount: float) -> void:
 	if is_dead:
 		return
-		
 	current_xp += amount * xp_multiplier
 	while current_xp >= xp_to_next_level:
 		current_xp -= xp_to_next_level

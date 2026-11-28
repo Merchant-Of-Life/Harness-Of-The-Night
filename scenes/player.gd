@@ -20,6 +20,9 @@ var current_xp: float = 0.0
 var xp_to_next_level: float = 10.0
 var krakens_stack: int = 0
 var xp_multiplier: float = 1.0
+var dodge_chance: float = 0.0
+var magnet_multiplier: float = 1.0
+var recharge_speed_multiplier: float = 1.0
 var pending_level_ups: int = 0
 
 var is_invulnerable: bool = false
@@ -60,7 +63,6 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		return
-		
 	var direction := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if Input.is_action_just_pressed("dash") and can_dash and direction != Vector2.ZERO:
 		is_dashing = true
@@ -71,7 +73,10 @@ func _physics_process(delta: float) -> void:
 	if is_dashing:
 		velocity = dash_direction * dash_speed
 	else:
-		velocity = direction * speed
+		var current_move_speed := speed
+		if is_charging:
+			current_move_speed *= recharge_speed_multiplier
+		velocity = direction * current_move_speed
 	move_and_slide()
 	update_book_orbit(delta)
 	handle_combat_input()
@@ -92,7 +97,6 @@ func update_book_orbit(delta: float) -> void:
 	var mouse_offset := get_global_mouse_position() - book.global_position
 	if mouse_offset.length() > 15.0:
 		aim_angle = lerp_angle(aim_angle, mouse_offset.angle(), 12.0 * delta)
-		
 	var aim_direction := Vector2.from_angle(aim_angle)
 	book_sprite.position = aim_direction * orbit_radius
 	book_sprite.z_index = -1 if aim_direction.y < 0.0 else 1
@@ -112,7 +116,6 @@ func fire_projectile() -> void:
 	current_charges -= 1
 	ammo_changed.emit(current_charges, max_charges, is_charging)
 	attack_cooldown_timer.start()
-	
 	var projectile := FIREBALL_SCENE.instantiate()
 	var aim_direction := (get_global_mouse_position() - book_sprite.global_position).normalized()
 	projectile.global_position = book_sprite.global_position
@@ -120,14 +123,12 @@ func fire_projectile() -> void:
 	projectile.rotation = aim_direction.angle()
 	projectile.damage = calculate_shot_damage()
 	get_parent().add_child(projectile)
-	
 	if current_charges <= 0:
 		start_recharge()
 		
 func calculate_shot_damage() -> float:
 	var final_damage := float(power)
 	for i in range(krakens_stack):
-		var xp_multiplier: float = 1.0
 		if randf() <= 0.60:
 			final_damage *= 1.60
 		else:
@@ -162,10 +163,29 @@ func apply_skill(skill_id: String) -> void:
 			xp_multiplier *= 0.85
 		"krakens_gamble":
 			krakens_stack += 1
-	
+		"quick_chant":
+			recharge_timer.wait_time = max(0.20, recharge_timer.wait_time * 0.65)
+			recharge_speed_multiplier *= 0.75
+		"glass_lantern":
+			power += 6
+			attack_cooldown_timer.wait_time = max(0.08, attack_cooldown_timer.wait_time * 0.70)
+			reduce_max_hp(10)
+		"veil_of_mist":
+			dodge_chance = min(0.60, dodge_chance + 0.15)
+			iframes_timer.wait_time = max(0.20, iframes_timer.wait_time * 0.70)
+		"soul_beacon":
+			magnet_multiplier *= 1.65
+			xp_multiplier *= 1.20
+			point_light.texture_scale = max(0.35, point_light.texture_scale * 0.80)
+			
 func heal_and_increase_max_hp(amount: int) -> void:
 	max_hp += amount
 	hp = min(hp + amount, max_hp)
+	hp_changed.emit(hp, max_hp)
+	
+func reduce_max_hp(amount: int) -> void:
+	max_hp = max(10, max_hp - amount)
+	hp = min(hp, max_hp)
 	hp_changed.emit(hp, max_hp)
 	
 func refill_and_increase_max_charges(amount: int) -> void:
@@ -179,10 +199,10 @@ func refill_and_increase_max_charges(amount: int) -> void:
 func take_damage(amount: int) -> void:
 	if is_invulnerable or is_dead:
 		return
-		
+	if dodge_chance > 0.0 and randf() < dodge_chance:
+		return
 	hp = max(0, hp - amount)
 	hp_changed.emit(hp, max_hp)
-	
 	if hp <= 0:
 		die()
 	else:
@@ -243,6 +263,7 @@ func _on_hit_flash_timer_timeout() -> void:
 func _on_iframes_timeout() -> void:
 	is_invulnerable = false
 	is_hit_flashing = false
+	hit_flash_timer.stop()
 	
 func _on_death_timer_timeout() -> void:
 	if get_parent().has_method("show_game_over"):

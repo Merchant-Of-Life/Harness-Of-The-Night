@@ -1,4 +1,5 @@
 extends Area2D
+
 @export var magnet_radius: float = 110.0
 @export var move_speed: float = 350.0
 
@@ -7,16 +8,16 @@ var is_magnetized: bool = false
 var player: CharacterBody2D = null
 var collected: bool = false
 
+
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player")
 	
 func _physics_process(delta: float) -> void:
 	if player == null or player.is_dead:
 		return
-		
-	if not is_magnetized and global_position.distance_to(player.global_position) <= magnet_radius:
+	var effective_radius: float = magnet_radius * player.magnet_multiplier
+	if not is_magnetized and global_position.distance_to(player.global_position) <= effective_radius:
 		is_magnetized = true
-		
 	if is_magnetized:
 		var direction := global_position.direction_to(player.global_position)
 		global_position += direction * move_speed * delta

@@ -12,7 +12,7 @@ const ALL_SKILLS: Array[Dictionary] = [
 		"id": "murmur",
 		"name": "Murmur",
 		"branch": "Grimoire Mastery",
-		"desc": "+25% Cast Speed\n+20% Recharge Time"
+		"desc": "+25% Cast Speed\n-20% Recharge Time"
 	},
 	{
 		"id": "guideness_of_light",
@@ -43,6 +43,30 @@ const ALL_SKILLS: Array[Dictionary] = [
 		"name": "Kraken's Gamble",
 		"branch": "Abyssal Pact",
 		"desc": "60% chance for 1.60x dmg,\n40% chance for 0.70x dmg"
+	},
+	{
+		"id": "quick_chant",
+		"name": "Quick Chant",
+		"branch": "Grimoire Mastery",
+		"desc": "+35% Recharge Speed\n-25% Move Speed\nwhile recharging"
+	},
+	{
+		"id": "glass_lantern",
+		"name": "Glass Lantern",
+		"branch": "Abyssal Pact",
+		"desc": "+6 Power &\n+30% Cast Speed\n-1 Max Heart"
+	},
+	{
+		"id": "veil_of_mist",
+		"name": "veil of mist",
+		"branch": "Shadow Step",
+		"desc": "15% Dodge Chance\n-30% Iframes Duration"
+	},
+	{
+		"id": "soul_beacon",
+		"name": "Soul Beacon",
+		"branch": "Lantern & Soul",
+		"desc": "+65% Soul Magnet &\n+20% XP Gained\n-20% Light Radius"
 	}
 ]
 

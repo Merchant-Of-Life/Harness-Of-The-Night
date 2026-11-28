@@ -3,17 +3,18 @@ extends CharacterBody2D
 
 const SOUL_SHARD_SCENE := preload("res://scenes/SoulShard.tscn")
 
-@export var max_hp: float = 1.0
+@export var max_hp: float = 10.0
 @export var speed: float = 150.0
-@export var damage: int = 1
+@export var damage: int = 10
 @export var xp_reward: float = 1.0
 
-var hp: float = 1
+var hp: float = 10.0
 var is_dead: bool = false
 var player: CharacterBody2D = null
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+
 
 func _ready() -> void:
 	hp = max_hp

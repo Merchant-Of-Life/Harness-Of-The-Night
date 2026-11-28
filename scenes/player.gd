@@ -8,17 +8,18 @@ signal leveled_up
 const FIREBALL_SCENE := preload("res://scenes/fireball.tscn")
 
 @export var attack_style: String = "magic"
-@export var max_hp: int = 3
+@export var max_hp: int = 30
 @export var speed: float = 220.0
 @export var dash_speed: float = 650.0
 @export var max_charges: int = 6
 
-var hp: int = 3
-var power: int = 1
+var hp: int = 30
+var power: int = 10
 var level: int = 1
 var current_xp: float = 0.0
 var xp_to_next_level: float = 10.0
 var krakens_stack: int = 0
+var xp_multiplier: float = 1.0
 var pending_level_ups: int = 0
 
 var is_invulnerable: bool = false
@@ -36,6 +37,7 @@ var current_charges: int = 6
 
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var point_light: PointLight2D = $PointLight2D
 @onready var book: Node2D = $Book
 @onready var book_sprite: AnimatedSprite2D = $Book/BookSprite
 @onready var dash_timer: Timer = $DashTimer
@@ -125,10 +127,11 @@ func fire_projectile() -> void:
 func calculate_shot_damage() -> float:
 	var final_damage := float(power)
 	for i in range(krakens_stack):
+		var xp_multiplier: float = 1.0
 		if randf() <= 0.60:
-			final_damage *= 1.50
+			final_damage *= 1.60
 		else:
-			final_damage *= 0.90
+			final_damage *= 0.70
 	return final_damage
 	
 func start_recharge() -> void:
@@ -136,6 +139,29 @@ func start_recharge() -> void:
 	ammo_changed.emit(current_charges, max_charges, is_charging)
 	book_sprite.play_backwards("open")
 	recharge_timer.start()
+	
+func apply_skill(skill_id: String) -> void:
+	match skill_id:
+		"wick_and_flint":
+			power += 4
+			attack_cooldown_timer.wait_time *= 1.15
+		"murmur":
+			attack_cooldown_timer.wait_time = max(0.08, attack_cooldown_timer.wait_time * 0.75)
+			recharge_timer.wait_time *= 1.20
+		"guideness_of_light":
+			point_light.texture_scale += 0.40
+			speed = max(100.0, speed - 20.0)
+		"quire":
+			refill_and_increase_max_charges(2)
+			recharge_timer.wait_time *= 1.25
+		"swift":
+			speed += 40.0
+			point_light.texture_scale = max(0.35, point_light.texture_scale * 0.85)
+		"grit_of_blood":
+			heal_and_increase_max_hp(10)
+			xp_multiplier *= 0.85
+		"krakens_gamble":
+			krakens_stack += 1
 	
 func heal_and_increase_max_hp(amount: int) -> void:
 	max_hp += amount
@@ -180,7 +206,7 @@ func gain_xp(amount: float) -> void:
 	if is_dead:
 		return
 		
-	current_xp += amount
+	current_xp += amount * xp_multiplier
 	while current_xp >= xp_to_next_level:
 		current_xp -= xp_to_next_level
 		level += 1

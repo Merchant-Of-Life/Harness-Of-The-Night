@@ -129,6 +129,7 @@ height = 40.0
 collision_layer = 4
 motion_mode = 1
 script = ExtResource("1_01fq5")
+max_hp = 20.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=154151352]
 sprite_frames = SubResource("SpriteFrames_neqau")

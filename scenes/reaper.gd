@@ -11,7 +11,8 @@ var can_attack: bool = true
 @onready var attack_cooldown_timer: Timer = $AttackCooldownTimer
 
 func _init() -> void:
-	max_hp = 2.0 
+	max_hp = 20.0
+	damage = 10
 	speed = 135.0
 	xp_reward = 2.0
 	

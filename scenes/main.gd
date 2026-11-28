@@ -128,7 +128,7 @@ func spawn_bat_wave() -> void:
 	for i in range(bats_to_spawn):
 		var bat := BAT_SCENE.instantiate()
 		if elapsed_seconds >= 240:
-			bat.max_hp = 2.0
+			bat.max_hp = 20.0
 			bat.speed = 200.0
 			bat.xp_reward = 1.5
 		bat.global_position = get_offscreen_spawn_position()
@@ -144,13 +144,13 @@ func spawn_reaper_wave() -> void:
 	for i in range(reapers_to_spawn):
 		var reaper := REAPER_SCENE.instantiate()
 		if elapsed_seconds >= 360:
-			reaper.max_hp = 5.0
+			reaper.max_hp = 50.0
 			reaper.xp_reward = 4.0
 		elif elapsed_seconds >= 240:
-			reaper.max_hp = 4.0
+			reaper.max_hp = 40.0
 			reaper.xp_reward = 3.0
 		elif elapsed_seconds >= 180:
-			reaper.max_hp = 3.0
+			reaper.max_hp = 30.0
 			reaper.xp_reward = 2.5
 		reaper.global_position = get_offscreen_spawn_position()
 		add_child(reaper)
